@@ -1,23 +1,15 @@
 import * as puppeteer from 'puppeteer'
 
-interface Returno {
-  aleatorioArroba: string
-  maisArroba: string
-}
-
 export class FindArrobasServices {
   public async execute(url: string): Promise<string[]> {
     async function loadMore(page: puppeteer.Page, selector: string) {
       const moreButton = await page.$(selector)
       if (moreButton) {
-        console.log('teste seletor existe')
         await page.click(selector)
         await page
           .waitForSelector(seletor, { timeout: 5000 })
-          .catch(() => console.log('timeout dentro'))
+          .catch(() => console.log('timeout'))
         await loadMore(page, selector)
-      } else {
-        console.log('seletor nao existe')
       }
     }
 
@@ -28,7 +20,7 @@ export class FindArrobasServices {
       return comments
     }
 
-    const browser = await puppeteer.launch({ headless: false })
+    const browser = await puppeteer.launch()
     const page = await browser.newPage()
     await page.goto(url)
     await page.screenshot({ path: 'example.png' })
@@ -50,6 +42,8 @@ export class FindArrobasServices {
 
     const comments = await getComments(page, '._a9zr span a')
     console.log(comments)
+
+    await browser.close()
 
     return comments
   }
